@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="179.0" prefWidth="552.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="179.0" prefWidth="552.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hydraScrimTool.controller.ConfigController">
    <children>
       <GridPane layoutX="90.0" layoutY="58.0" prefHeight="291.0" prefWidth="508.0" AnchorPane.bottomAnchor="-0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -30,58 +30,58 @@
          <children>
             <Label text="Team 1 Tag:" GridPane.halignment="RIGHT" />
             <Label text="Team 2 Tag:" GridPane.columnIndex="2" GridPane.halignment="RIGHT" />
-            <TextField GridPane.columnIndex="1">
+            <TextField fx:id="team1Field" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </TextField>
-            <TextField GridPane.columnIndex="3" GridPane.columnSpan="2147483647">
+            <TextField fx:id="team2Field" GridPane.columnIndex="3" GridPane.columnSpan="2147483647">
                <GridPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </TextField>
             <Label text="World:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-            <ComboBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <ComboBox fx:id="worldComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </ComboBox>
             <Label text="Base:" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-            <TextField GridPane.columnIndex="3" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+            <TextField fx:id="baseField" GridPane.columnIndex="3" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </TextField>
             <Label text="Time Limit:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-            <TextField GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <TextField fx:id="timeLimitField" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </TextField>
             <Label text="Scoring File:" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-            <TextField GridPane.columnIndex="3" GridPane.rowIndex="2">
+            <TextField fx:id="scoreFileField" GridPane.columnIndex="3" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </TextField>
-            <Button mnemonicParsing="false" text="Button" GridPane.columnIndex="4" GridPane.rowIndex="2">
+            <Button mnemonicParsing="false" onAction="#handleOpenFileChooser" text="Button" GridPane.columnIndex="4" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                </GridPane.margin>
             </Button>
             <FlowPane alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                <children>
-                  <Button mnemonicParsing="false" text="Save">
+                  <Button mnemonicParsing="false" onAction="#handleSave" text="Save">
                      <FlowPane.margin>
                         <Insets left="5.0" right="5.0" top="5.0" />
                      </FlowPane.margin>
                   </Button>
-                  <Button mnemonicParsing="false" text="Cancel">
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" text="Cancel">
                      <FlowPane.margin>
                         <Insets left="5.0" right="5.0" top="5.0" />
                      </FlowPane.margin>
                   </Button>
-                  <Button mnemonicParsing="false" text="Clear">
+                  <Button mnemonicParsing="false" onAction="#handleClear" text="Clear">
                      <FlowPane.margin>
                         <Insets left="5.0" right="5.0" top="5.0" />
                      </FlowPane.margin>

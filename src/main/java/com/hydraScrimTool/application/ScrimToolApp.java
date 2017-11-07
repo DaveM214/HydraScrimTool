@@ -1,12 +1,16 @@
 package com.hydraScrimTool.application;
 
+import java.util.Observable;
+
 import com.hydraScrimTool.controller.MainController;
 import com.hydraScrimTool.model.MainPanelModel;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class ScrimToolApp extends Application{
@@ -26,8 +30,12 @@ public class ScrimToolApp extends Application{
          MainController mainController = loader.getController();
          MainPanelModel model = new MainPanelModel();
          mainController.initModel(model);
+         mainController.setControlAccess();
+         mainController.giveStage(primaryStage);
          
          primaryStage.setTitle(APPLICATION_NAME);
+         ObservableList<Image> icons  = primaryStage.getIcons();
+         //TODO add icon to window
          primaryStage.setScene(scene);
          primaryStage.show();
 	}

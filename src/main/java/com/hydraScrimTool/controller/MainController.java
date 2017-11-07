@@ -1,26 +1,45 @@
 package com.hydraScrimTool.controller;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import com.hydraScrimTool.model.ConfigModel;
 import com.hydraScrimTool.model.MainPanelModel;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 public class MainController {
 
+	private static final String CONFIG_PANE_OPEN_ERROR = "An error occured opening the configuration pane";
 	private static final String EXIT_CONFIRMATION = "Are you sure you want to exit?";
 	private static final String NEW_MATCH_CONFIRMATION = "Are you sure you want to start a new match? This will delete the current one.";
 	private static final String STOP_MATCH_CONFIRMATION = "Are you sure you want to stop the current match?";
 	private static final String NOT_CONFIGURED_ERROR = "The match must be configured before it is started";
+	private static final String CONFIGURE_FXML = "/fxml/ConfigDialog.fxml";
 
 	private MainPanelModel model;
+	private Stage parentWindow;
+	private List<Button> togglyButtons;
+
+	public MainController() {
+		
+	}
 
 	public void initModel(MainPanelModel model) {
 		if (this.model == null) {
@@ -55,12 +74,30 @@ public class MainController {
 
 	@FXML
 	private Label outfitLabel2;
-	
+
 	@FXML
 	private Label team1TableLabel;
-	
-	@FXML 
+
+	@FXML
 	private Label team2TableLabel;
+
+	@FXML
+	private Button aliasButton;
+
+	@FXML
+	private Button startButton;
+
+	@FXML
+	private Button stopButton;
+
+	@FXML
+	private Button manualScoreButton;
+
+	@FXML
+	private Button nextRoundButton;
+
+	@FXML
+	private Button resetRoundButton;
 
 	@FXML
 	void handleAddManualScore(ActionEvent event) {
@@ -69,7 +106,12 @@ public class MainController {
 
 	@FXML
 	void handleConfigure(ActionEvent event) {
-		showConfigureDialog();
+		try {
+			showConfigureDialog();
+		} catch (IOException e) {
+			showErrorMessage(CONFIG_PANE_OPEN_ERROR);
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -79,17 +121,17 @@ public class MainController {
 
 	@FXML
 	void handleMenuExit(ActionEvent event) {
-		if(showConfirmMessage(EXIT_CONFIRMATION) == true ){
+		if (showConfirmMessage(EXIT_CONFIRMATION) == true) {
 			System.exit(0);
 		}
 	}
 
 	@FXML
 	void handleNewMatch(ActionEvent event) {
-		if(showConfirmMessage(NEW_MATCH_CONFIRMATION) == true ){
+		if (showConfirmMessage(NEW_MATCH_CONFIRMATION) == true) {
 			createNewMatch();
 		}
-		
+
 	}
 
 	@FXML
@@ -97,58 +139,57 @@ public class MainController {
 		startMatch();
 	}
 
-
 	@FXML
 	void handleStopMatch(ActionEvent event) {
-		if(showConfirmMessage(STOP_MATCH_CONFIRMATION) == true ){
+		if (showConfirmMessage(STOP_MATCH_CONFIRMATION) == true) {
 			stopMatch();
 		}
 	}
-	
-	@FXML 
-	void handleNewRound(ActionEvent event){
-		
-	}
-	
+
 	@FXML
-    void handleTeam1Add(ActionEvent event) {
+	void handleNewRound(ActionEvent event) {
 
-    }
+	}
 
-    @FXML
-    void handleTeam1AddAll(ActionEvent event) {
+	@FXML
+	void handleTeam1Add(ActionEvent event) {
 
-    }
+	}
 
-    @FXML
-    void handleTeam1Clear(ActionEvent event) {
+	@FXML
+	void handleTeam1AddAll(ActionEvent event) {
 
-    }
+	}
 
-    @FXML
-    void handleTeam1Remove(ActionEvent event) {
+	@FXML
+	void handleTeam1Clear(ActionEvent event) {
 
-    }
+	}
 
-    @FXML
-    void handleTeam2Add(ActionEvent event) {
+	@FXML
+	void handleTeam1Remove(ActionEvent event) {
 
-    }
+	}
 
-    @FXML
-    void handleTeam2AddAll(ActionEvent event) {
+	@FXML
+	void handleTeam2Add(ActionEvent event) {
 
-    }
+	}
 
-    @FXML
-    void handleTeam2Clear(ActionEvent event) {
+	@FXML
+	void handleTeam2AddAll(ActionEvent event) {
 
-    }
+	}
 
-    @FXML
-    void handleTeam2Remove(ActionEvent event) {
+	@FXML
+	void handleTeam2Clear(ActionEvent event) {
 
-    }
+	}
+
+	@FXML
+	void handleTeam2Remove(ActionEvent event) {
+
+	}
 
 	@FXML
 	void initialize() {
@@ -158,6 +199,9 @@ public class MainController {
 		assert outfitScore1 != null : "fx:id=\"outfitScore1\" was not injected: check your FXML file 'MainPanel.fxml'.";
 		assert outfitScore2 != null : "fx:id=\"outfitScore2\" was not injected: check your FXML file 'MainPanel.fxml'.";
 		assert outfitLabel2 != null : "fx:id=\"outfitLabel2\" was not injected: check your FXML file 'MainPanel.fxml'.";
+		
+		this.togglyButtons = new ArrayList<Button>(Arrays.asList(aliasButton, startButton, stopButton,
+				manualScoreButton, nextRoundButton, resetRoundButton));
 
 	}
 
@@ -184,31 +228,50 @@ public class MainController {
 		alert.showAndWait();
 	}
 
-	private void showConfigureDialog() {
-		// TODO Auto-generated method stub
+	private void showConfigureDialog() throws IOException {
+		FXMLLoader configLoader = new FXMLLoader(getClass().getResource(CONFIGURE_FXML));
+		Parent root = configLoader.load();
+
+		ConfigController configController = configLoader.getController();
+		ConfigModel configModel = new ConfigModel();
+		configController.initModel(configModel);
+
+		Stage stage = new Stage();
+		stage.setTitle(ConfigController.TITLE);
+		stage.setScene(new Scene(root));
+		stage.showAndWait();
+		setControlAccess();
 	}
 
 	private void showAliasManagerDialog() {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	private void createNewMatch() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	private void startMatch() {
-		if(model.isCurrentMatchConfigured()){
+		if (model.isCurrentMatchConfigured()) {
 			model.startMatch();
-		}else{
+		} else {
 			showErrorMessage(NOT_CONFIGURED_ERROR);
 		}
 	}
-	
+
 	private void stopMatch() {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	public void giveStage(Stage stage) {
+		this.parentWindow = stage;
+	}
+
+	public void setControlAccess() {
+		togglyButtons.stream().forEach(e -> e.setDisable(!model.isCurrentMatchConfigured()));
 	}
 
 }
