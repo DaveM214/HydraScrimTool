@@ -21,6 +21,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
@@ -235,9 +236,9 @@ public class MainController {
 		ConfigController configController = configLoader.getController();
 		ConfigModel configModel = new ConfigModel();
 		configController.initModel(configModel);
-
 		Stage stage = new Stage();
 		stage.setTitle(ConfigController.TITLE);
+	    stage.getIcons().add(new Image("/icons/hydraLogo.png"));
 		stage.setScene(new Scene(root));
 		stage.showAndWait();
 		setControlAccess();

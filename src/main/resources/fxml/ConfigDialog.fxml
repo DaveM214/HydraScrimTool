@@ -76,6 +76,11 @@
                         <Insets left="5.0" right="5.0" top="5.0" />
                      </FlowPane.margin>
                   </Button>
+                  <Button mnemonicParsing="false" onAction="#handleUpdate" text="Update">
+                     <FlowPane.margin>
+                        <Insets left="5.0" right="5.0" top="5.0" />
+                 	 </FlowPane.margin>
+                  </Button>
                   <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" text="Cancel">
                      <FlowPane.margin>
                         <Insets left="5.0" right="5.0" top="5.0" />

@@ -10,23 +10,23 @@ import com.hydraScrimTool.model.planetside.Outfit;
 public class ConfigModel {
 
 	public static final int DEFAULT_TIME = 300;
-	
+
 	private File scoreFile;
-	//Represent time as number of seconds
+	// Represent time as number of seconds
 	private int time;
 	private Outfit team1;
 	private Outfit team2;
-	
-	//This could change because of how rounds are done
+
+	// This could change because of how rounds are done
 	private Base base;
 	private int worldID;
 	private RestfulQuestioner restful;
-	
-	public ConfigModel(){
+
+	public ConfigModel() {
 		this.time = DEFAULT_TIME;
 		this.restful = new RestfulQuestioner();
 	}
-	
+
 	public int getTime() {
 		return time;
 	}
@@ -70,7 +70,7 @@ public class ConfigModel {
 	public static int getDefaultTime() {
 		return DEFAULT_TIME;
 	}
-	
+
 	public Optional<File> getScoreFile() {
 		return Optional.ofNullable(scoreFile);
 	}
@@ -78,13 +78,27 @@ public class ConfigModel {
 	public void setScoreFile(File scoreFile) {
 		this.scoreFile = scoreFile;
 	}
-	
-	public void initialiseScoreDocument(){
-		
+
+	public boolean initialiseScoreDocument() {
+		ScoreParser parser = new ScoreParser();
+		return true;
 	}
 
 	public boolean validateData() {
 		return true;
 	}
-	
+
+	public boolean lookupOutfit(int i, String tag) {
+		Optional<Outfit> outfit = restful.findOutfit(tag);
+		if (outfit.isPresent()) {
+			if (i == 1) {
+				team1 = outfit.get();
+			} else {
+				team2 = outfit.get();
+			}
+			return true;
+		}
+		return false;
+	}
+
 }

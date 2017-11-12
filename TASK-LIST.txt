@@ -1,0 +1,25 @@
+The Tasks that needs to be completed in no particular order:
+
+
+PROGRAMMING
+1. Parser for rules file - converting them to nice objects
+2. Code to query RESTful API to get info about outfits, players etc
+3. Code to stream events on the socket API
+4. GUI Stuff - mostly whacking in code for tables and linking stuff up.
+5. Create Alias manager GUI and code
+6. (Document The code so it has a semblance of maintainability)
+
+SORT-OF-PROGRAMMING
+1. Style the GUI with some CSS so it looks pretty
+
+NON-PROGRAMMING
+1. Test built versions for bugs
+2. Write a user guide
+
+To summon Nema:
+
+In order of speed
+
+Or find on Cobalt Discord, or Hydra TS (hydras.sexy)
+Email: Nemasirex@gmail.com 
+Send him a github message

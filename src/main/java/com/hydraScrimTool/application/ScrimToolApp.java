@@ -32,10 +32,8 @@ public class ScrimToolApp extends Application{
          mainController.initModel(model);
          mainController.setControlAccess();
          mainController.giveStage(primaryStage);
-         
+         primaryStage.getIcons().add(new Image("/icons/hydraLogo.png"));
          primaryStage.setTitle(APPLICATION_NAME);
-         ObservableList<Image> icons  = primaryStage.getIcons();
-         //TODO add icon to window
          primaryStage.setScene(scene);
          primaryStage.show();
 	}
