@@ -4,10 +4,6 @@ build/
 # Ignore Gradle GUI config
 gradle-app.setting
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-
 # Compiled class file
 *.class
 
@@ -46,3 +42,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+!HydraScrimTool-*.jar

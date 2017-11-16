@@ -30,7 +30,6 @@ public class ScrimToolApp extends Application{
          MainController mainController = loader.getController();
          MainPanelModel model = new MainPanelModel();
          mainController.initModel(model);
-         mainController.setControlAccess();
          mainController.giveStage(primaryStage);
          primaryStage.getIcons().add(new Image("/icons/hydraLogo.png"));
          primaryStage.setTitle(APPLICATION_NAME);

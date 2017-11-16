@@ -37,15 +37,19 @@ public class MainController {
 	private MainPanelModel model;
 	private Stage parentWindow;
 	private List<Button> togglyButtons;
+	private List<Button> playerControlButtons;
 
 	public MainController() {
-		
+
 	}
 
 	public void initModel(MainPanelModel model) {
 		if (this.model == null) {
 			this.model = model;
 		}
+		setControlAccess();
+		setPlayerConfigButtons();
+		resetTextFields();
 	}
 
 	//////////////////////////////////////////////////
@@ -62,7 +66,7 @@ public class MainController {
 	private Label factionLabel1;
 
 	@FXML
-	private Label factioLabel2;
+	private Label factionLabel2;
 
 	@FXML
 	private Label outfitLabel1;
@@ -99,6 +103,40 @@ public class MainController {
 
 	@FXML
 	private Button resetRoundButton;
+
+	@FXML
+	private Label outfit1TotalLabel;
+
+	@FXML
+	private Label outfit2TotalLabel;
+
+	@FXML
+	private Label timerLabel;
+
+	@FXML
+	private Button team1AddButton;
+
+	@FXML
+	private Button team1RemoveButton;
+
+	@FXML
+	private Button team1AddAllButton;
+
+	@FXML
+	private Button team1ClearButton;
+
+	@FXML
+	private Button team2AddButton;
+
+	@FXML
+	private Button team2RemoveButton;
+
+	@FXML
+	private Button team2AddAllButton;
+
+	@FXML
+	private Button team2ClearButton;
+
 
 	@FXML
 	void handleAddManualScore(ActionEvent event) {
@@ -159,7 +197,7 @@ public class MainController {
 
 	@FXML
 	void handleTeam1AddAll(ActionEvent event) {
-
+		
 	}
 
 	@FXML
@@ -195,14 +233,18 @@ public class MainController {
 	@FXML
 	void initialize() {
 		assert factionLabel1 != null : "fx:id=\"factionLabel1\" was not injected: check your FXML file 'MainPanel.fxml'.";
-		assert factioLabel2 != null : "fx:id=\"factioLabel2\" was not injected: check your FXML file 'MainPanel.fxml'.";
+		assert factionLabel2 != null : "fx:id=\"factioLabel2\" was not injected: check your FXML file 'MainPanel.fxml'.";
 		assert outfitLabel1 != null : "fx:id=\"outfitLabel1\" was not injected: check your FXML file 'MainPanel.fxml'.";
 		assert outfitScore1 != null : "fx:id=\"outfitScore1\" was not injected: check your FXML file 'MainPanel.fxml'.";
 		assert outfitScore2 != null : "fx:id=\"outfitScore2\" was not injected: check your FXML file 'MainPanel.fxml'.";
 		assert outfitLabel2 != null : "fx:id=\"outfitLabel2\" was not injected: check your FXML file 'MainPanel.fxml'.";
-		
+
 		this.togglyButtons = new ArrayList<Button>(Arrays.asList(aliasButton, startButton, stopButton,
 				manualScoreButton, nextRoundButton, resetRoundButton));
+
+		this.playerControlButtons = new ArrayList<Button>(
+				Arrays.asList(team1AddButton, team1AddAllButton, team1ClearButton, team1RemoveButton, team2AddButton,
+						team2AddAllButton, team2ClearButton, team2RemoveButton));
 
 	}
 
@@ -235,13 +277,16 @@ public class MainController {
 
 		ConfigController configController = configLoader.getController();
 		ConfigModel configModel = new ConfigModel();
-		configController.initModel(configModel);
+		configController.initConfigModel(configModel);
+		configController.initMainModel(model);
 		Stage stage = new Stage();
 		stage.setTitle(ConfigController.TITLE);
-	    stage.getIcons().add(new Image("/icons/hydraLogo.png"));
+		stage.getIcons().add(new Image("/icons/hydraLogo.png"));
 		stage.setScene(new Scene(root));
 		stage.showAndWait();
 		setControlAccess();
+		setInformationFields();
+		setPlayerConfigButtons();
 	}
 
 	private void showAliasManagerDialog() {
@@ -271,8 +316,34 @@ public class MainController {
 		this.parentWindow = stage;
 	}
 
-	public void setControlAccess() {
+	private void setControlAccess() {
 		togglyButtons.stream().forEach(e -> e.setDisable(!model.isCurrentMatchConfigured()));
+	}
+
+	private void setPlayerConfigButtons() {
+		playerControlButtons.stream().forEach(e -> e.setDisable(!model.isCurrentMatchConfigured()));
+	}
+
+	private void setInformationFields() {
+		if (model.isCurrentMatchConfigured()) {
+			outfitLabel1.setText("[" + model.getCurrentMatch().getOutfit1().getOutfitTag() + "]");
+			outfitLabel2.setText("[" + model.getCurrentMatch().getOutfit2().getOutfitTag() + "]");
+			outfitScore1.setText(Integer.toString(model.getCurrentMatch().getOutfit1().getScore()));
+			outfitScore2.setText(Integer.toString(model.getCurrentMatch().getOutfit2().getScore()));
+		}
+	}
+
+	public void resetTextFields() {
+		outfitLabel1.setText("");
+		outfitLabel2.setText("");
+		factionLabel1.setText("");
+		factionLabel2.setText("");
+		outfitScore1.setText("0");
+		outfitScore2.setText("0");
+		outfit1TotalLabel.setText("0");
+		outfit2TotalLabel.setText("0");
+		timerLabel.setText("0:00");
+
 	}
 
 }

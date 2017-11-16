@@ -1,20 +1,25 @@
 package com.hydraScrimTool.model.planetside;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hydraScrimTool.common.enums.FactionEnum;
 
 public class Outfit {
 	
-	public String outfitName;
-	public String outfitTag;
-	public String censusId;
-	public int outfitScore;
+	private String outfitName;
+	private FactionEnum faction;
+	private String outfitTag;
+	private String censusId;
+	private int outfitScore;
+	private Set<Player> players;
 	
 	public Outfit(){
-		
+		this.players = new HashSet<>();
 	}
 
 	/**
@@ -34,6 +39,8 @@ public class Outfit {
 			this.outfitName = jsonOutfit.get("name").asText();
 			this.censusId = jsonOutfit.get("outfit_id").asText();
 			this.outfitTag = jsonOutfit.get("alias").asText();
+			
+			//TODO GET THE OUTFIT FACTION AS WELL
 			
 			//Should never happen
 		} catch (JsonProcessingException e) {
@@ -78,6 +85,14 @@ public class Outfit {
 	
 	public void incrementScore(int inc){
 		this.outfitScore += inc;
+	}
+	
+	public void setFaction(FactionEnum faction){
+		this.faction = faction;
+	}
+	
+	public FactionEnum getFaction(){
+		return this.faction;
 	}
 	
 }

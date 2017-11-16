@@ -14,6 +14,7 @@ public class ScoredMatch extends Match{
 	private Outfit outfit2;
 	private MatchLog matchLog;
 	private List<Round> rounds;
+	private int timeLimit;
 	
 	public ScoredMatch(){
 		this.configured = false;
@@ -43,12 +44,12 @@ public class ScoredMatch extends Match{
 		this.configured =  configured;
 	}
 	
-	public void setScoreSystem(File scoreFile){
-		//Parse the scoreFile and make the object
-	}
-	
 	public ScoreSystem getScoreSystem(){
 		return this.scoring;
+	}
+	
+	public void setScoreSystem(ScoreSystem scoreSys){
+		this.scoring = scoreSys;
 	}
 	
 	public MatchLog getMatchLog(){
@@ -57,6 +58,14 @@ public class ScoredMatch extends Match{
 	
 	public List<Round> getRounds(){
 		return this.rounds;
+	}
+	
+	public void setConfiguration(Outfit team1, Outfit team2, int timeLimit, ScoreSystem scoring){
+		this.configured = true;
+		this.outfit1 = team1;
+		this.outfit2 = team2;
+		this.timeLimit = timeLimit;
+		this.scoring = scoring;
 	}
 	
 	

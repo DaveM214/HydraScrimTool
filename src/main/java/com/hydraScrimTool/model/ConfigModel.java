@@ -12,6 +12,7 @@ public class ConfigModel {
 	public static final int DEFAULT_TIME = 300;
 
 	private File scoreFile;
+	private ScoreSystem scoreSystem;
 	// Represent time as number of seconds
 	private int time;
 	private Outfit team1;
@@ -81,14 +82,16 @@ public class ConfigModel {
 
 	public boolean initialiseScoreDocument() {
 		ScoreParser parser = new ScoreParser();
+		this.scoreSystem = parser.parse(scoreFile);
 		return true;
 	}
-
-	public boolean validateData() {
-		return true;
+	
+	public ScoreSystem getScoreSystem(){
+		return this.scoreSystem;
 	}
 
 	public boolean lookupOutfit(int i, String tag) {
+		tag = tag.toUpperCase();
 		Optional<Outfit> outfit = restful.findOutfit(tag);
 		if (outfit.isPresent()) {
 			if (i == 1) {
@@ -99,6 +102,11 @@ public class ConfigModel {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean validateMatchTime(String text) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 }

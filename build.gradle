@@ -7,9 +7,13 @@
  * user guide available at https://docs.gradle.org/2.9/userguide/tutorial_java_projects.html
  */
 
-// Apply the java plugin to add support for Java
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
+
+version = 1.0
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -17,12 +21,24 @@ repositories {
     mavenCentral()
 }
 
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'Hydra Scrim Tool',
+        	'Implementation-Version': version,
+        	'Main-Class': 'com.hydraScrimTool.application.ScrimToolApp'
+    }
+    baseName = project.name
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+
+
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.13'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
-	
     testCompile 'junit:junit:4.12'
 }

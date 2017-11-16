@@ -4,16 +4,21 @@ import java.io.File;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
 import com.hydraScrimTool.model.ConfigModel;
 import com.hydraScrimTool.model.MainPanelModel;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
@@ -24,8 +29,10 @@ public class ConfigController {
 
 	public static final String TITLE = "Configuration";
 	private static final String TEXT_FIELD_FILL = "-fx-background-color: ";
-	private static final String TEXT_FIELD_RED = "red;";
-	private static final String TEXT_FIELD_GREEN = "green;";
+	private static final String TEXT_FIELD_RED = "#e25353;";
+	private static final String TEXT_FIELD_GREEN = "#65e53d;";
+	private static final int OUTFIT_TAG_LENGTH = 4;
+	private boolean valid;
 	private ConfigModel configModel;
 	private Stage parentWindow;
 
@@ -42,12 +49,6 @@ public class ConfigController {
 	private TextField team2Field;
 
 	@FXML
-	private ComboBox<?> worldComboBox;
-
-	@FXML
-	private TextField baseField;
-
-	@FXML
 	private TextField timeLimitField;
 
 	@FXML
@@ -55,6 +56,10 @@ public class ConfigController {
 
 	@FXML
 	private Button cancelButton;
+
+	@FXML
+	private Button saveButton;
+	private MainPanelModel mainModel;
 
 	@FXML
 	void handleCancel(ActionEvent event) {
@@ -69,7 +74,6 @@ public class ConfigController {
 			this.team1Field.setStyle(null);
 			this.team2Field.clear();
 			this.team2Field.setStyle(null);
-			this.baseField.clear();
 			setDefaultTime();
 			this.scoreFileField.clear();
 		}
@@ -80,17 +84,39 @@ public class ConfigController {
 		boolean team1Valid = configModel.lookupOutfit(1, team1Field.getText());
 		boolean team2Valid = configModel.lookupOutfit(2, team2Field.getText());
 		boolean scoringFileParsed = configModel.initialiseScoreDocument();
+		boolean validTime = configModel.validateMatchTime(timeLimitField.getText());
+
+		String redFill = TEXT_FIELD_FILL + TEXT_FIELD_RED;
+		String greenFill = TEXT_FIELD_FILL + TEXT_FIELD_GREEN;
 
 		if (team1Valid) {
-			team1Field.setStyle(TEXT_FIELD_FILL + TEXT_FIELD_GREEN);
+			team1Field.setStyle(greenFill);
 		} else {
-			team1Field.setStyle(TEXT_FIELD_FILL + TEXT_FIELD_RED);
+			team1Field.setStyle(redFill);
 		}
+
 		if (team2Valid) {
-			team2Field.setStyle(TEXT_FIELD_FILL + TEXT_FIELD_GREEN);
+			team2Field.setStyle(greenFill);
 		} else {
-			team2Field.setStyle(TEXT_FIELD_FILL + TEXT_FIELD_RED);
+			team2Field.setStyle(redFill);
 		}
+
+		if (validTime) {
+			timeLimitField.setStyle(greenFill);
+		} else {
+			timeLimitField.setStyle(redFill);
+		}
+
+		if (scoringFileParsed) {
+			scoreFileField.setStyle(greenFill);
+		} else {
+			scoreFileField.setStyle(redFill);
+		}
+
+		if (team1Valid && team2Valid && scoringFileParsed && validTime) {
+			this.saveButton.setDisable(false);
+		}
+
 	}
 
 	@FXML
@@ -103,25 +129,47 @@ public class ConfigController {
 
 	@FXML
 	void handleSave(ActionEvent event) {
-		if (configModel.validateData()) {
-
-		}
+		this.mainModel.getCurrentMatch().setConfiguration(configModel.getTeam1().get(), configModel.getTeam2().get(),
+				configModel.getTime(), configModel.getScoreSystem());
+		Stage stage = (Stage) saveButton.getScene().getWindow();
+		stage.close();
 	}
 
 	@FXML
 	void initialize() {
 		assert team1Field != null : "fx:id=\"team1Field\" was not injected: check your FXML file 'ConfigDialog.fxml'.";
 		assert team2Field != null : "fx:id=\"team2Field\" was not injected: check your FXML file 'ConfigDialog.fxml'.";
-		assert worldComboBox != null : "fx:id=\"worldComboBox\" was not injected: check your FXML file 'ConfigDialog.fxml'.";
-		assert baseField != null : "fx:id=\"baseField\" was not injected: check your FXML file 'ConfigDialog.fxml'.";
 		assert timeLimitField != null : "fx:id=\"timeLimitField\" was not injected: check your FXML file 'ConfigDialog.fxml'.";
 		assert scoreFileField != null : "fx:id=\"scoreFileField\" was not injected: check your FXML file 'ConfigDialog.fxml'.";
 
+		addLengthLimiter(team1Field, OUTFIT_TAG_LENGTH);
+		addLengthLimiter(team2Field, OUTFIT_TAG_LENGTH);
+		this.valid = false;
+		this.saveButton.setDisable(true);
 	}
 
-	public void initModel(ConfigModel model) {
+	private void addLengthLimiter(TextField textField, int length) {
+		textField.textProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (textField.getText().length() > length) {
+					String s = textField.getText().substring(0, length);
+					textField.setText(s);
+				}
+			}
+		});
+	}
+
+	public void initConfigModel(ConfigModel model) {
 		if (this.configModel == null) {
 			this.configModel = model;
+		}
+	}
+
+	public void initMainModel(MainPanelModel mainModel) {
+		if (this.mainModel == null) {
+			this.mainModel = mainModel;
 		}
 	}
 
@@ -143,8 +191,7 @@ public class ConfigController {
 	}
 
 	private void setDefaultTime() {
-		// TODO Auto-generated method stub
-
+		this.timeLimitField.setText(Integer.toString(ConfigModel.DEFAULT_TIME));
 	}
 
 }
