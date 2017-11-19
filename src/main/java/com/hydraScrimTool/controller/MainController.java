@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import com.hydraScrimTool.model.AliasModel;
 import com.hydraScrimTool.model.ConfigModel;
 import com.hydraScrimTool.model.MainPanelModel;
+import com.hydraScrimTool.model.Model;
+import com.hydraScrimTool.model.planetside.Outfit;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +22,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
@@ -33,7 +37,8 @@ public class MainController {
 	private static final String STOP_MATCH_CONFIRMATION = "Are you sure you want to stop the current match?";
 	private static final String NOT_CONFIGURED_ERROR = "The match must be configured before it is started";
 	private static final String CONFIGURE_FXML = "/fxml/ConfigDialog.fxml";
-
+	private static final String ALIAS_FXML = "/fxml/AliasDialog.fxml";
+	
 	private MainPanelModel model;
 	private Stage parentWindow;
 	private List<Button> togglyButtons;
@@ -155,7 +160,12 @@ public class MainController {
 
 	@FXML
 	void handleManageAliases(ActionEvent event) {
-		showAliasManagerDialog();
+		try {
+			showAliasManagerDialog();
+		} catch (IOException e) {
+			showErrorMessage(CONFIG_PANE_OPEN_ERROR);
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -245,11 +255,26 @@ public class MainController {
 		this.playerControlButtons = new ArrayList<Button>(
 				Arrays.asList(team1AddButton, team1AddAllButton, team1ClearButton, team1RemoveButton, team2AddButton,
 						team2AddAllButton, team2ClearButton, team2RemoveButton));
-
 	}
 
 	//////////////////////////////////////////////////
-
+	
+	private void handleAddPlayer(Outfit outfit, TableView table) {
+		
+	}
+	
+	private void handleAddAll(Outfit outfit, TableView table){
+		
+	}
+	
+	private void handleRemove(Outfit outfit, TableView table){
+		
+	}
+	
+	private void handleClear(Outfit outfit, TableView table){
+		
+	}
+	
 	private boolean showConfirmMessage(String msg) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText("Error");
@@ -272,35 +297,38 @@ public class MainController {
 	}
 
 	private void showConfigureDialog() throws IOException {
-		FXMLLoader configLoader = new FXMLLoader(getClass().getResource(CONFIGURE_FXML));
-		Parent root = configLoader.load();
-
-		ConfigController configController = configLoader.getController();
-		ConfigModel configModel = new ConfigModel();
-		configController.initConfigModel(configModel);
-		configController.initMainModel(model);
-		Stage stage = new Stage();
-		stage.setTitle(ConfigController.TITLE);
-		stage.getIcons().add(new Image("/icons/hydraLogo.png"));
-		stage.setScene(new Scene(root));
-		stage.showAndWait();
+		Model configModel = new ConfigModel();
+		showDialog(CONFIGURE_FXML,configModel);
 		setControlAccess();
 		setInformationFields();
 		setPlayerConfigButtons();
 	}
-
-	private void showAliasManagerDialog() {
-		// TODO Auto-generated method stub
-
+	
+	private void showAliasManagerDialog() throws IOException {
+		showDialog(ALIAS_FXML, model.getAliasModel());
+		
+	}
+	
+	private void showDialog(String FXML_PATH, Model model)throws IOException{
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
+		Parent root = loader.load();
+		Controller controller = loader.getController();
+		controller.initModel(model);
+		controller.initMainModel(this.model);
+		Stage stage = new Stage();
+		stage.setTitle(controller.getTitle());
+		stage.getIcons().add(new Image("/icons/hydraLogo.png"));
+		stage.setScene(new Scene(root));
+		stage.showAndWait();
 	}
 
 	private void createNewMatch() {
 		// TODO Auto-generated method stub
-
 	}
 
 	private void startMatch() {
 		if (model.isCurrentMatchConfigured()) {
+			
 			model.startMatch();
 		} else {
 			showErrorMessage(NOT_CONFIGURED_ERROR);
@@ -330,6 +358,8 @@ public class MainController {
 			outfitLabel2.setText("[" + model.getCurrentMatch().getOutfit2().getOutfitTag() + "]");
 			outfitScore1.setText(Integer.toString(model.getCurrentMatch().getOutfit1().getScore()));
 			outfitScore2.setText(Integer.toString(model.getCurrentMatch().getOutfit2().getScore()));
+			team1TableLabel.setText(model.getCurrentMatch().getOutfit1().getOutfitName());
+			team2TableLabel.setText(model.getCurrentMatch().getOutfit2().getOutfitName());
 		}
 	}
 
@@ -342,8 +372,9 @@ public class MainController {
 		outfitScore2.setText("0");
 		outfit1TotalLabel.setText("0");
 		outfit2TotalLabel.setText("0");
+		team1TableLabel.setText("");
+		team2TableLabel.setText("");
 		timerLabel.setText("0:00");
-
 	}
 
 }

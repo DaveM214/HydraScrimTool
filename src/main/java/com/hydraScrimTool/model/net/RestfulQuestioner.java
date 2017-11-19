@@ -21,7 +21,7 @@ import com.hydraScrimTool.model.planetside.Outfit;
 
 public class RestfulQuestioner {
 
-	private String serviceID = AppConstants.EXAMPLE_SERVICE;
+	private String serviceID = AppConstants.HYDRA_SERVICE;
 
 	public RestfulQuestioner() {
 

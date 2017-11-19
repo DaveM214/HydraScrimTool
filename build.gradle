@@ -40,5 +40,9 @@ dependencies {
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+	
+	// https://mvnrepository.com/artifact/commons-configuration/commons-configuration
+	compile group: 'commons-configuration', name: 'commons-configuration', version: '1.10'
+	
     testCompile 'junit:junit:4.12'
 }

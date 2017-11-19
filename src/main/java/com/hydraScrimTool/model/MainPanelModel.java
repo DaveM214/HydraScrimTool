@@ -11,11 +11,13 @@ public class MainPanelModel {
 	private ScoredMatch currentMatch;
 	private RestfulQuestioner rQuestioner;
 	private SocketConnectionManager socketConnectionManager;
+	private AliasModel aliasModel;
 	
 	public MainPanelModel(){
 		this.currentMatch = new ScoredMatch();
 		this.rQuestioner = new RestfulQuestioner();
 		this.socketConnectionManager = new SocketConnectionManager();
+		this.aliasModel = new AliasModel();
 	}
 	
 	public void createNewMatch(){
@@ -40,6 +42,14 @@ public class MainPanelModel {
 
 	public void startMatch() {
 		
+	}
+	
+	public void setAliasModel(AliasModel aliasModel){
+		this.aliasModel = aliasModel;
+	}
+
+	public Model getAliasModel() {
+		return (Model)this.aliasModel;
 	}
 	
 	

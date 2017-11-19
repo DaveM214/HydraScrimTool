@@ -7,7 +7,7 @@ import com.hydraScrimTool.model.net.RestfulQuestioner;
 import com.hydraScrimTool.model.planetside.Base;
 import com.hydraScrimTool.model.planetside.Outfit;
 
-public class ConfigModel {
+public class ConfigModel implements Model{
 
 	public static final int DEFAULT_TIME = 300;
 

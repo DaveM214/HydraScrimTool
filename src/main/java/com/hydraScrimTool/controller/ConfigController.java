@@ -8,6 +8,7 @@ import java.util.function.UnaryOperator;
 
 import com.hydraScrimTool.model.ConfigModel;
 import com.hydraScrimTool.model.MainPanelModel;
+import com.hydraScrimTool.model.Model;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,7 +26,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-public class ConfigController {
+public class ConfigController implements Controller{
 
 	public static final String TITLE = "Configuration";
 	private static final String TEXT_FIELD_FILL = "-fx-background-color: ";
@@ -161,12 +162,14 @@ public class ConfigController {
 		});
 	}
 
-	public void initConfigModel(ConfigModel model) {
+	@Override
+	public void initModel(Model model) {
 		if (this.configModel == null) {
-			this.configModel = model;
+			this.configModel = (ConfigModel)model;
 		}
 	}
 
+	@Override
 	public void initMainModel(MainPanelModel mainModel) {
 		if (this.mainModel == null) {
 			this.mainModel = mainModel;
@@ -192,6 +195,16 @@ public class ConfigController {
 
 	private void setDefaultTime() {
 		this.timeLimitField.setText(Integer.toString(ConfigModel.DEFAULT_TIME));
+	}
+
+	@Override
+	public String getName() {
+		return this.getClass().toString();
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 
 }
