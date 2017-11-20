@@ -15,6 +15,8 @@ public class Player {
 		this.playerOutfit = outfit;
 		this.name = name;
 		this.playerLog = new MatchLog();
+		
+		//TODO Code in here to automatically analyse an "Easy" alias
 	}
 
 	public Outfit getPlayerOutfit() {

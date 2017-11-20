@@ -1,4 +1,4 @@
-package com.hydraScrimTool.model;
+package com.hydraScrimTool.model.alias;
 
 import java.io.File;
 import java.util.Iterator;
@@ -8,6 +8,10 @@ import java.util.Optional;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
+
+import com.hydraScrimTool.model.Model;
+
+import javafx.collections.ObservableList;
 
 public class AliasModel implements Model{
 
@@ -29,8 +33,8 @@ public class AliasModel implements Model{
 		dictionary.setAlias(characterName, alias);
 	}
 	
-	public boolean removeAlias(String characterName){
-		return dictionary.removePlayer(characterName);
+	public void removeAlias(String characterName){
+		 dictionary.removePlayer(characterName);
 	}
 	
 	public void parseAliasFile(File file) throws ConfigurationException{

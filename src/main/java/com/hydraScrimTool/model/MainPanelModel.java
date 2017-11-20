@@ -3,6 +3,7 @@ package com.hydraScrimTool.model;
 import java.util.Optional;
 import java.util.OptionalLong;
 
+import com.hydraScrimTool.model.alias.AliasModel;
 import com.hydraScrimTool.model.net.RestfulQuestioner;
 import com.hydraScrimTool.model.net.SocketConnectionManager;
 

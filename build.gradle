@@ -43,6 +43,7 @@ dependencies {
 	
 	// https://mvnrepository.com/artifact/commons-configuration/commons-configuration
 	compile group: 'commons-configuration', name: 'commons-configuration', version: '1.10'
+	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 	
     testCompile 'junit:junit:4.12'
 }
