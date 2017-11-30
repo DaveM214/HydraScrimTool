@@ -3,11 +3,10 @@ The Tasks that needs to be completed in no particular order:
 
 PROGRAMMING
 1. Parser for rules file - converting them to nice objects
-2. Grab players and place in tables - think of good way to structure this in code
+2. Grab players and place in tables - think of good way to structure this in code - NEXT - GRAB PLAYERS FROM API AND DISPLAY IN TABLE.
 3. Code to stream events on the socket API
 4. GUI Stuff - mostly whacking in code for tables and linking stuff up.
-5. Create Alias manager GUI and code
-6. (Document The code so it has a semblance of maintainability)
+5.. (Document The code so it has a semblance of maintainability)
 
 SORT-OF-PROGRAMMING
 1. Style the GUI with some CSS so it looks pretty

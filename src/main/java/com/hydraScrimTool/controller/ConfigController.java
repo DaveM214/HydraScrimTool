@@ -68,6 +68,7 @@ public class ConfigController implements Controller{
 		stage.close();
 	}
 
+	//TODO Clear the scoring file field.
 	@FXML
 	void handleClear(ActionEvent event) {
 		if (showConfirmMessage("Are you sure you wish to clear all fields?")) {
@@ -75,7 +76,8 @@ public class ConfigController implements Controller{
 			this.team1Field.setStyle(null);
 			this.team2Field.clear();
 			this.team2Field.setStyle(null);
-			setDefaultTime();
+			this.timeLimitField.clear();
+			this.timeLimitField.setStyle(null);
 			this.scoreFileField.clear();
 		}
 	}
@@ -89,7 +91,7 @@ public class ConfigController implements Controller{
 
 		String redFill = TEXT_FIELD_FILL + TEXT_FIELD_RED;
 		String greenFill = TEXT_FIELD_FILL + TEXT_FIELD_GREEN;
-
+		
 		if (team1Valid) {
 			team1Field.setStyle(greenFill);
 		} else {

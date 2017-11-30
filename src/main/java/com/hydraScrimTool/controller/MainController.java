@@ -358,6 +358,7 @@ public class MainController {
 			outfitScore2.setText(Integer.toString(model.getCurrentMatch().getOutfit2().getScore()));
 			team1TableLabel.setText(model.getCurrentMatch().getOutfit1().getOutfitName());
 			team2TableLabel.setText(model.getCurrentMatch().getOutfit2().getOutfitName());
+			displayTime(model.getCurrentMatch().getTimeLimit());
 		}
 	}
 
@@ -373,6 +374,12 @@ public class MainController {
 		team1TableLabel.setText("");
 		team2TableLabel.setText("");
 		timerLabel.setText("0:00");
+	}
+	
+	public void displayTime(int time){
+		int minutes = time / 60;
+		int seconds = time % 60;
+		timerLabel.setText(minutes +":"+seconds);
 	}
 
 }

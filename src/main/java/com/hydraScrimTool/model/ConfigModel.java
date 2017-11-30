@@ -104,9 +104,28 @@ public class ConfigModel implements Model{
 		return false;
 	}
 
+	
+	/**
+	 * Method that converts the text entered in the time field from mm:ss to seconds. Will also allow a raw value in seconds
+	 * @param text Raw text
+	 * @return Whether the time entered by the user was valid.
+	 */
 	public boolean validateMatchTime(String text) {
-		// TODO Auto-generated method stub
-		return true;
+		boolean validTimeString = text.matches("(\\d{1,2}:\\d{2}|\\d+)");
+		if(validTimeString) {
+			//If we have a minute:seconds string
+			if(text.contains(":")) {
+				int minutes = Integer.parseInt(text.substring(0, text.lastIndexOf(":")));
+				int seconds = Integer.parseInt(text.substring(text.lastIndexOf(":")+1));
+				time = 60*minutes + seconds;
+				return true;		
+			}else {
+				time = Integer.parseInt(text);
+				return true;
+			}
+		}else {
+			return false;
+		}
 	}
 
 }

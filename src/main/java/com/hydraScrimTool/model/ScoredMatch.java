@@ -60,6 +60,10 @@ public class ScoredMatch extends Match{
 		return this.rounds;
 	}
 	
+	public int getTimeLimit(){
+		return this.timeLimit;
+	}
+	
 	public void setConfiguration(Outfit team1, Outfit team2, int timeLimit, ScoreSystem scoring){
 		this.configured = true;
 		this.outfit1 = team1;

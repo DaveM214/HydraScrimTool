@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import org.apache.commons.configuration.ConfigurationException;
@@ -23,6 +24,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -80,6 +82,7 @@ public class AliasController implements Controller {
 		characterColumn.setCellValueFactory(cell -> cell.getValue().getNameProperty());
 		aliasColumn.setCellValueFactory(cell -> cell.getValue().getAliasProperty());
 		aliasTable.setItems(this.aliasTableEntries);
+		aliasTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
 	public AliasController() {
@@ -119,13 +122,15 @@ public class AliasController implements Controller {
 
 	@FXML
 	void handleRemove(ActionEvent event) {
-		AliasTableEntry selectedItem = aliasTable.getSelectionModel().getSelectedItem();
+		List<AliasTableEntry> selectedItems = aliasTable.getSelectionModel().getSelectedItems();
 
-		// Remove from dictionary
-		aliasModel.getDictionary().removePlayer(selectedItem.getName());
+		for (AliasTableEntry selectedItem : selectedItems) {
+			// Remove from dictionary
+			aliasModel.getDictionary().removePlayer(selectedItem.getName());
 
-		// Remove from table
-		aliasTable.getItems().remove(selectedItem);
+			// Remove from table
+			aliasTable.getItems().remove(selectedItem);
+		}
 	}
 
 	/**
