@@ -7,12 +7,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import com.hydraScrimTool.model.ConfigModel;
 import com.hydraScrimTool.model.MainPanelModel;
 import com.hydraScrimTool.model.Model;
+import com.hydraScrimTool.model.alias.AliasTableEntry;
+import com.hydraScrimTool.model.net.RestfulQuestioner;
 import com.hydraScrimTool.model.planetside.Outfit;
+import com.hydraScrimTool.model.planetside.Player;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,12 +26,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 
 public class MainController {
 
@@ -42,8 +52,12 @@ public class MainController {
 	private List<Button> togglyButtons;
 	private List<Button> playerControlButtons;
 
+	private ObservableList<PlayerTeamTableEntry> team1PlayersList;
+	private ObservableList<PlayerTeamTableEntry> team2PlayersList;
+	
 	public MainController() {
-
+		this.team1PlayersList = FXCollections.observableArrayList();
+		this.team2PlayersList = FXCollections.observableArrayList();
 	}
 
 	public void initModel(MainPanelModel model) {
@@ -139,7 +153,30 @@ public class MainController {
 
 	@FXML
 	private Button team2ClearButton;
+	
+    @FXML
+    private TableView<PlayerTeamTableEntry> team1Table;
 
+    @FXML
+    private TableColumn<PlayerTeamTableEntry, String> team1PlayerColumn;
+
+    @FXML
+    private TableColumn<PlayerTeamTableEntry, String> team1AliasColumn;
+
+    @FXML
+    private TableColumn<PlayerTeamTableEntry, String> team1OnlineColumn;
+
+    @FXML
+    private TableView<PlayerTeamTableEntry> team2Table;
+
+    @FXML
+    private TableColumn<PlayerTeamTableEntry, String> team2PlayerColumn;
+
+    @FXML
+    private TableColumn<PlayerTeamTableEntry, String> team2AliasColumn;
+
+    @FXML
+    private TableColumn<PlayerTeamTableEntry, String> team2OnlineColumn;
 
 	@FXML
 	void handleAddManualScore(ActionEvent event) {
@@ -200,42 +237,42 @@ public class MainController {
 
 	@FXML
 	void handleTeam1Add(ActionEvent event) {
-
+		handleAddPlayer(model.getCurrentMatch().getOutfit1(), team1PlayersList);
 	}
 
 	@FXML
 	void handleTeam1AddAll(ActionEvent event) {
-		
+		handleAddAll(model.getCurrentMatch().getOutfit1(),  team1PlayersList);
 	}
 
 	@FXML
 	void handleTeam1Clear(ActionEvent event) {
-
+		handleClear(model.getCurrentMatch().getOutfit1(), team1PlayersList);
 	}
 
 	@FXML
 	void handleTeam1Remove(ActionEvent event) {
-
+		handleRemove(model.getCurrentMatch().getOutfit1(), team1PlayersList, team1Table.getSelectionModel().getSelectedItems());
 	}
 
 	@FXML
 	void handleTeam2Add(ActionEvent event) {
-
+		handleAddPlayer(model.getCurrentMatch().getOutfit2(), team2PlayersList);
 	}
 
 	@FXML
 	void handleTeam2AddAll(ActionEvent event) {
-
+		handleAddAll(model.getCurrentMatch().getOutfit2(),  team2PlayersList);
 	}
 
 	@FXML
 	void handleTeam2Clear(ActionEvent event) {
-
+		handleClear(model.getCurrentMatch().getOutfit2(), team2PlayersList);
 	}
 
 	@FXML
 	void handleTeam2Remove(ActionEvent event) {
-
+		handleRemove(model.getCurrentMatch().getOutfit2(), team2PlayersList, team2Table.getSelectionModel().getSelectedItems());
 	}
 
 	@FXML
@@ -253,24 +290,65 @@ public class MainController {
 		this.playerControlButtons = new ArrayList<Button>(
 				Arrays.asList(team1AddButton, team1AddAllButton, team1ClearButton, team1RemoveButton, team2AddButton,
 						team2AddAllButton, team2ClearButton, team2RemoveButton));
+		
+		
+		team1PlayerColumn.setCellValueFactory(cell -> cell.getValue().getNameProperty());
+		team1AliasColumn.setCellValueFactory(cell -> cell.getValue().getAliasProperty());
+		team1OnlineColumn.setCellValueFactory(cell -> cell.getValue().getOnlineProperty());
+		team1Table.setItems(this.team1PlayersList);
+		team1Table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
+		team2PlayerColumn.setCellValueFactory(cell -> cell.getValue().getNameProperty());
+		team2AliasColumn.setCellValueFactory(cell -> cell.getValue().getAliasProperty());
+		team2OnlineColumn.setCellValueFactory(cell -> cell.getValue().getOnlineProperty());
+		team2Table.setItems(this.team2PlayersList);
+		team2Table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 	}
 
 	//////////////////////////////////////////////////
 	
-	private void handleAddPlayer(Outfit outfit, TableView table) {
+	private void handleAddPlayer(Outfit outfit, ObservableList<PlayerTeamTableEntry> playerList) {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Add Player");
+		dialog.setHeaderText(null);
+		dialog.setContentText("Player Name:");
+		Optional<String> playerName = dialog.showAndWait();
 		
+		if (playerName.isPresent()) {
+			RestfulQuestioner rq = new RestfulQuestioner();
+			Optional<Player> player = rq.getPlayerByName(playerName.get());
+			if(player.isPresent()){
+				outfit.addPlayer(player.get());
+				redrawPlayerListTable(playerList,outfit.getPlayers());
+			}
+		}	
 	}
 	
-	private void handleAddAll(Outfit outfit, TableView table){
-		
+	private void handleAddAll(Outfit outfit, ObservableList<PlayerTeamTableEntry> playerList){
+		List<Player> onlinePlayers = outfit.getAllOnlinePlayers();
+		outfit.addPlayers(onlinePlayers);
+		redrawPlayerListTable(playerList,outfit.getPlayers());
 	}
 	
-	private void handleRemove(Outfit outfit, TableView table){
-		
+	private void redrawPlayerListTable(ObservableList<PlayerTeamTableEntry> playerList, Set<Player> players){
+		playerList.clear();
+		for (Player player : players) {
+			playerList.add(new PlayerTeamTableEntry(player));
+		}
 	}
 	
-	private void handleClear(Outfit outfit, TableView table){
-		
+	private void handleRemove(Outfit outfit, ObservableList<PlayerTeamTableEntry> playerList, List<PlayerTeamTableEntry> selectedItems){
+
+		for (PlayerTeamTableEntry selectedItem : selectedItems) {
+			outfit.getPlayers().remove(selectedItem.getPlayer().get());
+		}
+		redrawPlayerListTable(playerList, outfit.getPlayers());
+	}
+	
+	private void handleClear(Outfit outfit, ObservableList<PlayerTeamTableEntry> playerList){
+		outfit.getPlayers().clear();
+		playerList.clear();
 	}
 	
 	private boolean showConfirmMessage(String msg) {
@@ -296,6 +374,7 @@ public class MainController {
 
 	private void showConfigureDialog() throws IOException {
 		Model configModel = new ConfigModel();
+		//TODO code here to display existing config details
 		showDialog(CONFIGURE_FXML,configModel);
 		setControlAccess();
 		setInformationFields();
@@ -304,7 +383,6 @@ public class MainController {
 	
 	private void showAliasManagerDialog() throws IOException {
 		showDialog(ALIAS_FXML, model.getAliasModel());
-		
 	}
 	
 	private void showDialog(String FXML_PATH, Model model)throws IOException{

@@ -2,12 +2,17 @@ package com.hydraScrimTool.model.planetside;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hydraScrimTool.common.enums.FactionEnum;
+import com.hydraScrimTool.controller.PlayerTeamTableEntry;
+import com.hydraScrimTool.model.net.RestfulQuestioner;
 
 public class Outfit {
 	
@@ -19,7 +24,7 @@ public class Outfit {
 	private Set<Player> players;
 	
 	public Outfit(){
-		this.players = new HashSet<>();
+		this.players = new LinkedHashSet<>();
 	}
 
 	/**
@@ -28,6 +33,7 @@ public class Outfit {
 	 */
 	public Outfit(String jsonString) {
 		this.outfitScore = 0;
+		this.players = new TreeSet<Player>();
 		
 		//We will always need to get the first element of the outfit list returned
 		ObjectMapper mapper = new ObjectMapper();
@@ -93,6 +99,24 @@ public class Outfit {
 	
 	public FactionEnum getFaction(){
 		return this.faction;
+	}
+	
+	public List<Player> getAllOnlinePlayers(){
+		RestfulQuestioner rq = new RestfulQuestioner();
+		List<Player> onlinePlayers = rq.getOnlinePlayers(this);
+		return onlinePlayers;
+	}
+
+	public void addPlayers(List<Player> onlinePlayers) {
+		this.players.addAll(onlinePlayers);
+	}
+	
+	public void addPlayer(Player player){
+		this.players.add(player);
+	}
+
+	public Set<Player> getPlayers() {
+		return this.players;
 	}
 	
 }

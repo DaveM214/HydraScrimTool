@@ -3,6 +3,8 @@ package com.hydraScrimTool.model.net;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hydraScrimTool.common.AppConstants;
 import com.hydraScrimTool.model.planetside.Outfit;
+import com.hydraScrimTool.model.planetside.Player;
 
 public class RestfulQuestioner {
 
@@ -36,11 +39,12 @@ public class RestfulQuestioner {
 	 * @return Optional of outfit.
 	 */
 	public Optional<Outfit> findOutfit(String tag) {
-		//Handling for empty string as this will return an outfit with the empty tag
-		if(StringUtils.equals("", tag)){
+		// Handling for empty string as this will return an outfit with the
+		// empty tag
+		if (StringUtils.equals("", tag)) {
 			tag = "invalid";
 		}
-		
+
 		String queryString = "outfit/?alias=";
 		try {
 			String result = sendGetRequest(queryString + tag);
@@ -55,6 +59,70 @@ public class RestfulQuestioner {
 			}
 		} catch (IOException e) {
 			return Optional.ofNullable(null);
+		}
+	}
+
+	public Optional<Player> getPlayerByName(String name) {
+		String queryString = "character/?name.first_lower=";
+		try {
+			String result = sendGetRequest(queryString + name.toLowerCase());
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode object = mapper.readTree(result);
+			JsonNode numReturned = object.get("returned");
+			if (numReturned.asInt() == 0) {
+				// Just return an empty list if none found
+				return Optional.ofNullable(null);
+			} else {
+				JsonNode jsonPlayer = object.get("character_list").get(0);
+				Player player = new Player(jsonPlayer);
+				return Optional.of(player);
+			}
+		} catch (IOException e) {
+			return Optional.ofNullable(null);
+		}
+	}
+
+	public List<Player> getOnlinePlayers(Outfit outfit) {
+		String queryString = "";
+		try {
+			String result = sendGetRequest(queryString + outfit.getOutfitTag());
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode object = mapper.readTree(result);
+			int numReturned = object.get("returned").asInt();
+			if (numReturned == 0) {
+				return new ArrayList<Player>();
+			} else {
+				List<Player> players = new ArrayList<Player>();
+				for(int i = 0; i< numReturned ; i++){
+					players.add(new Player(object.get("THE_NAME_OF_THE_LIST").get(i).asText()));
+				}
+				return players;
+			}
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
+	public boolean isPlayerOnline(Player player) {
+		String queryString = "characters_online_status/?character_id=";
+		try {
+			String result = sendGetRequest(queryString + player.getId());
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode object = mapper.readTree(result);
+			JsonNode numReturned = object.get("returned");
+			if (numReturned.asInt() == 0) {
+				// Return false if none found
+				return false;
+			} else {
+				int online = object.get("characters_online_status_list").get(0).get("online_status").asInt();
+				if(online > 0 ){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		} catch (IOException e) {
+			return false;
 		}
 	}
 
@@ -79,5 +147,7 @@ public class RestfulQuestioner {
 			return "";
 		}
 	}
+
+	
 
 }
