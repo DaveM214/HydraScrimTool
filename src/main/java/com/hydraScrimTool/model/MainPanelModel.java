@@ -2,10 +2,12 @@ package com.hydraScrimTool.model;
 
 import java.util.Optional;
 import java.util.OptionalLong;
+import java.util.Set;
 
 import com.hydraScrimTool.model.alias.AliasModel;
 import com.hydraScrimTool.model.net.RestfulQuestioner;
 import com.hydraScrimTool.model.net.SocketConnectionManager;
+import com.hydraScrimTool.model.planetside.Player;
 
 public class MainPanelModel {
 	
@@ -51,6 +53,27 @@ public class MainPanelModel {
 
 	public Model getAliasModel() {
 		return (Model)this.aliasModel;
+	}
+
+	public void matchPlayersToAlias() {
+		 Set<Player> team1Players = currentMatch.getOutfit1().getPlayers();
+		 Set<Player> team2Players = currentMatch.getOutfit2().getPlayers();	 
+		 assignPlayersAlias(team1Players);
+		 assignPlayersAlias(team2Players);
+	}
+
+	private void assignPlayersAlias(Set<Player> team1Players) {
+		for (Player player : team1Players) {
+			Optional<String> alias = aliasModel.getAliasForPlayer(player.getName());
+			//If there is an alias in the model then use that one
+			if(alias.isPresent()) {
+				player.setAlias(alias.get());
+			}else if(!player.hasSimpleAlias()) {
+				player.setAlias("");
+			}else {
+				player.processSimpleAlias();
+			}
+		}
 	}
 	
 	

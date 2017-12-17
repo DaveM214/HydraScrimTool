@@ -1,6 +1,7 @@
 package com.hydraScrimTool.model.planetside;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -103,8 +104,24 @@ public class Outfit {
 	
 	public List<Player> getAllOnlinePlayers(){
 		RestfulQuestioner rq = new RestfulQuestioner();
-		List<Player> onlinePlayers = rq.getOnlinePlayers(this);
+		List<Player> outfitPlayers = rq.getOutfitPlayers(this);
+		List<Player> onlinePlayers = getOnlinePlayers(outfitPlayers);
 		return onlinePlayers;
+	}
+
+	/**
+	 * Helper method which gets all of those players that are currently online
+	 * @param outfitPlayers
+	 * @return
+	 */
+	private List<Player> getOnlinePlayers(List<Player> outfitPlayers) {
+		List<Player> onlineList = new ArrayList<Player>();
+		for (Player player : outfitPlayers) {
+			if(player.isOnline()) {
+				onlineList.add(player);
+			}
+		}
+		return onlineList;
 	}
 
 	public void addPlayers(List<Player> onlinePlayers) {

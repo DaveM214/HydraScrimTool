@@ -82,10 +82,16 @@ public class RestfulQuestioner {
 		}
 	}
 
-	public List<Player> getOnlinePlayers(Outfit outfit) {
-		String queryString = "";
+	/**
+	 * Get first 100 members of an outfit.
+	 * @param outfit
+	 * @return
+	 */
+	public List<Player> getOutfitPlayers(Outfit outfit) {
+		String queryString = "outfit_member/?outfit_id="+ outfit.getCensusId() +"&c:limit=100&c:resolve=online_status";
+		
 		try {
-			String result = sendGetRequest(queryString + outfit.getOutfitTag());
+			String result = sendGetRequest(queryString);
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode object = mapper.readTree(result);
 			int numReturned = object.get("returned").asInt();
@@ -94,7 +100,10 @@ public class RestfulQuestioner {
 			} else {
 				List<Player> players = new ArrayList<Player>();
 				for(int i = 0; i< numReturned ; i++){
-					players.add(new Player(object.get("THE_NAME_OF_THE_LIST").get(i).asText()));
+					JsonNode node1 = object.get("outfit_member_list");
+					JsonNode node2 = object.get("outfit_member_list").get(i);
+					String playerJson = object.get("outfit_member_list").get(i).toString();
+					players.add(new Player(object.get("outfit_member_list").get(i).toString(),true));
 				}
 				return players;
 			}
@@ -125,6 +134,26 @@ public class RestfulQuestioner {
 			return false;
 		}
 	}
+	
+
+	public String lookupName(String id) {
+		String queryString = "character/?character_id=";
+		try {
+			String result = sendGetRequest(queryString + id);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode object = mapper.readTree(result);
+			JsonNode numReturned = object.get("returned");
+			if (numReturned.asInt() == 0) {
+				// Return false if none found
+				return "";
+			} else {
+				String test = object.get("character_list").get(0).toString();
+				return object.get("character_list").get(0).get("name").get("first").asText();
+			}
+		} catch (IOException e) {
+			return null;
+		}
+	}
 
 	private String sendGetRequest(String queryString) throws ClientProtocolException, IOException {
 		String url = AppConstants.CENSUS_URL + "/" + serviceID + "/get/" + AppConstants.PS2_API + "/" + queryString;
@@ -147,6 +176,7 @@ public class RestfulQuestioner {
 			return "";
 		}
 	}
+
 
 	
 

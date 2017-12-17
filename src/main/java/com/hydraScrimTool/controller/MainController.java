@@ -331,6 +331,11 @@ public class MainController {
 		redrawPlayerListTable(playerList,outfit.getPlayers());
 	}
 	
+	private void redrawPLayerListTableBoth(){
+		redrawPlayerListTable(team1PlayersList,model.getCurrentMatch().getOutfit1().getPlayers());
+		redrawPlayerListTable(team2PlayersList,model.getCurrentMatch().getOutfit2().getPlayers());
+	}
+	
 	private void redrawPlayerListTable(ObservableList<PlayerTeamTableEntry> playerList, Set<Player> players){
 		playerList.clear();
 		for (Player player : players) {
@@ -383,6 +388,8 @@ public class MainController {
 	
 	private void showAliasManagerDialog() throws IOException {
 		showDialog(ALIAS_FXML, model.getAliasModel());
+		model.matchPlayersToAlias();
+		redrawPLayerListTableBoth();
 	}
 	
 	private void showDialog(String FXML_PATH, Model model)throws IOException{
@@ -457,7 +464,8 @@ public class MainController {
 	public void displayTime(int time){
 		int minutes = time / 60;
 		int seconds = time % 60;
-		timerLabel.setText(minutes +":"+seconds);
+		String insert = seconds < 10 ? "0" : "";
+		timerLabel.setText(minutes +":"+insert+seconds);
 	}
 
 }
