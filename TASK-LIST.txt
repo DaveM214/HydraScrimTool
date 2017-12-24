@@ -1,12 +1,12 @@
 The Tasks that needs to be completed in no particular order:
 
 
-PROGRAMMING
-1. Parser for rules file - converting them to nice objects
-2. Grab players and place in tables - think of good way to structure this in code - NEXT - GRAB PLAYERS FROM API AND DISPLAY IN TABLE.
-3. Code to stream events on the socket API
-4. GUI Stuff - mostly whacking in code for tables and linking stuff up.
-5.. (Document The code so it has a semblance of maintainability)
+TODO List:
+1. Finish code for binding to a socket and get events from the server
+2. Code for binding some of the GUI elements that will updated
+3. Implement rounds and reset
+4. Config screen changed so that it accepts minutes and gets existing configurations.
+5. Correct behaviour for starting and stopping and new matches
 
 SORT-OF-PROGRAMMING
 1. Style the GUI with some CSS so it looks pretty

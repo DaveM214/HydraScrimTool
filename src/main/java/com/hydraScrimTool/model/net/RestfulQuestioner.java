@@ -44,10 +44,9 @@ public class RestfulQuestioner {
 		if (StringUtils.equals("", tag)) {
 			tag = "invalid";
 		}
-
-		String queryString = "outfit/?alias=";
+		String queryString = "outfit/?alias_lower=";
 		try {
-			String result = sendGetRequest(queryString + tag);
+			String result = sendGetRequest(queryString + tag.toLowerCase());
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode object = mapper.readTree(result);
 			JsonNode numReturned = object.get("returned");
@@ -100,9 +99,6 @@ public class RestfulQuestioner {
 			} else {
 				List<Player> players = new ArrayList<Player>();
 				for(int i = 0; i< numReturned ; i++){
-					JsonNode node1 = object.get("outfit_member_list");
-					JsonNode node2 = object.get("outfit_member_list").get(i);
-					String playerJson = object.get("outfit_member_list").get(i).toString();
 					players.add(new Player(object.get("outfit_member_list").get(i).toString(),true));
 				}
 				return players;

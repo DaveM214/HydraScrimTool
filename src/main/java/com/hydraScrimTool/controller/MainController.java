@@ -12,6 +12,7 @@ import java.util.Set;
 import com.hydraScrimTool.model.ConfigModel;
 import com.hydraScrimTool.model.MainPanelModel;
 import com.hydraScrimTool.model.Model;
+import com.hydraScrimTool.model.TimerTask;
 import com.hydraScrimTool.model.alias.AliasTableEntry;
 import com.hydraScrimTool.model.net.RestfulQuestioner;
 import com.hydraScrimTool.model.planetside.Outfit;
@@ -51,6 +52,7 @@ public class MainController {
 	private Stage parentWindow;
 	private List<Button> togglyButtons;
 	private List<Button> playerControlButtons;
+	private List<Button> offDuringMatch;
 
 	private ObservableList<PlayerTeamTableEntry> team1PlayersList;
 	private ObservableList<PlayerTeamTableEntry> team2PlayersList;
@@ -58,6 +60,7 @@ public class MainController {
 	public MainController() {
 		this.team1PlayersList = FXCollections.observableArrayList();
 		this.team2PlayersList = FXCollections.observableArrayList();
+
 	}
 
 	public void initModel(MainPanelModel model) {
@@ -104,6 +107,9 @@ public class MainController {
 	private Label team2TableLabel;
 
 	@FXML
+	private Button configButton;
+	
+	@FXML
 	private Button aliasButton;
 
 	@FXML
@@ -121,6 +127,9 @@ public class MainController {
 	@FXML
 	private Button resetRoundButton;
 
+	@FXML
+	private Button newMatchButton;
+	
 	@FXML
 	private Label outfit1TotalLabel;
 
@@ -291,6 +300,9 @@ public class MainController {
 				Arrays.asList(team1AddButton, team1AddAllButton, team1ClearButton, team1RemoveButton, team2AddButton,
 						team2AddAllButton, team2ClearButton, team2RemoveButton));
 		
+		this.offDuringMatch = new ArrayList<Button>();
+		offDuringMatch.addAll(playerControlButtons);
+		offDuringMatch.addAll(Arrays.asList(startButton,nextRoundButton,configButton,aliasButton,newMatchButton));
 		
 		team1PlayerColumn.setCellValueFactory(cell -> cell.getValue().getNameProperty());
 		team1AliasColumn.setCellValueFactory(cell -> cell.getValue().getAliasProperty());
@@ -384,6 +396,14 @@ public class MainController {
 		setControlAccess();
 		setInformationFields();
 		setPlayerConfigButtons();
+		setTimer();
+	}
+	
+	private void setTimer(){
+		if(model.isCurrentMatchConfigured()) {
+			model.setTimer();
+			timerLabel.textProperty().bind(model.getTimer().messageProperty());
+		}
 	}
 	
 	private void showAliasManagerDialog() throws IOException {
@@ -411,16 +431,17 @@ public class MainController {
 
 	private void startMatch() {
 		if (model.isCurrentMatchConfigured()) {
-			
 			model.startMatch();
+			offDuringMatch.stream().forEach(e -> e.setDisable(true));
 		} else {
 			showErrorMessage(NOT_CONFIGURED_ERROR);
 		}
 	}
 
 	private void stopMatch() {
-		// TODO Auto-generated method stub
-
+		if(model.getCurrentMatch().isStarted()) {
+			model.pauseMatch();
+		}
 	}
 
 	public void giveStage(Stage stage) {

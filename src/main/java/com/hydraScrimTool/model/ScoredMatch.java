@@ -15,9 +15,12 @@ public class ScoredMatch extends Match{
 	private MatchLog matchLog;
 	private List<Round> rounds;
 	private int timeLimit;
+	private boolean matchStarted;
+	
 	
 	public ScoredMatch(){
 		this.configured = false;
+		
 	}
 
 	public Outfit getOutfit1() {
@@ -70,6 +73,15 @@ public class ScoredMatch extends Match{
 		this.outfit2 = team2;
 		this.timeLimit = timeLimit;
 		this.scoring = scoring;
+	}
+
+	public void setMatchStarted(boolean matchStarted) {
+		this.matchStarted = matchStarted;
+		
+	}
+	
+	public boolean isStarted() {
+		return this.matchStarted;
 	}
 	
 	

@@ -1,5 +1,7 @@
 package com.hydraScrimTool.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -7,6 +9,7 @@ import java.util.Set;
 import com.hydraScrimTool.model.alias.AliasModel;
 import com.hydraScrimTool.model.net.RestfulQuestioner;
 import com.hydraScrimTool.model.net.SocketConnectionManager;
+import com.hydraScrimTool.model.net.SocketMonitoringTask;
 import com.hydraScrimTool.model.planetside.Player;
 
 public class MainPanelModel {
@@ -14,13 +17,18 @@ public class MainPanelModel {
 	private ScoredMatch currentMatch;
 	private RestfulQuestioner rQuestioner;
 	private SocketConnectionManager socketConnectionManager;
+	private SocketMonitoringTask socketTask;
 	private AliasModel aliasModel;
+	private TimerTask timer;
+	private EventStore eventStore;
 	
 	public MainPanelModel(){
 		this.currentMatch = new ScoredMatch();
 		this.rQuestioner = new RestfulQuestioner();
 		this.socketConnectionManager = new SocketConnectionManager();
 		this.aliasModel = new AliasModel();
+		this.eventStore = new EventStore();
+		this.timer = new TimerTask();
 	}
 	
 	public void createNewMatch(){
@@ -44,7 +52,39 @@ public class MainPanelModel {
 	}
 
 	public void startMatch() {
+		this.currentMatch.setMatchStarted(true);
+		initialiseSocketConnections();
+		new Thread(timer).start();
+	}
+	
+	/**
+	 * Open the socket connections to subscribe to the kill events for the characters concerned.
+	 */
+	private void initialiseSocketConnections() {
+		List<String> playerIDs = new ArrayList<String>();
+		Set<Player> players1 = currentMatch.getOutfit1().getPlayers();
+		Set<Player> players2 = currentMatch.getOutfit2().getPlayers();
+		getPlayerIDs(playerIDs, players1);	
+		getPlayerIDs(playerIDs, players2);
 		
+		//Now we have all of the player ID's we can create a socket that will listen for these events.
+		socketConnectionManager.setPlayerIDList(playerIDs);
+		socketTask = socketConnectionManager.createMatchSocketConnection();
+		socketTask.giveEventStore(eventStore);
+	}
+
+	private void getPlayerIDs(List<String> playerIDs, Set<Player> players1) {
+		for (Player player : players1) {
+			playerIDs.add(player.getId());
+		}
+	}
+
+	public void pauseMatch() {
+		timer.pauseTimer();
+	}
+	
+	public TimerTask getTimer() {
+		return this.timer;
 	}
 	
 	public void setAliasModel(AliasModel aliasModel){
@@ -74,6 +114,11 @@ public class MainPanelModel {
 				player.processSimpleAlias();
 			}
 		}
+	}
+
+	public void setTimer() {
+		this.timer.setInitialTime(getCurrentMatch().getTimeLimit());
+		
 	}
 	
 	

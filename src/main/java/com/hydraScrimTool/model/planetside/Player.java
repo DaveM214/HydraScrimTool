@@ -2,6 +2,8 @@ package com.hydraScrimTool.model.planetside;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +22,7 @@ public class Player implements Comparable<Player> {
 	private MatchLog playerLog;
 
 	/**
-	 * Constructor for Json string with online stauts
+	 * Constructor for Json string with online status
 	 * 
 	 * @param string
 	 * @param b
@@ -162,6 +164,18 @@ public class Player implements Comparable<Player> {
 	
 	public boolean hasSimpleAlias() {
 		return this.simpleAliasSet;
+	}
+	
+	/**
+	 * Return the alias if it exists. Otherwise return the player name
+	 * @return
+	 */
+	public String getUsableName() {
+		if(this.alias == null || StringUtils.equals("", this.alias)) {
+			return this.name;
+		}else {
+			return this.alias;
+		}
 	}
 
 	@Override
